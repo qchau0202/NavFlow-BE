@@ -68,3 +68,6 @@ Thumbs.db
 
 # Detection Model
 ml/
+
+# MongoDB
+.mongodump/

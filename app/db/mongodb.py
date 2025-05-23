@@ -1,6 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
+import os
 
-MONGO_DETAILS = "mongodb+srv://523k0002:fkOTYrcfC63G9aqA@navflow.nmv5bin.mongodb.net/"
+MONGO_DETAILS = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 
 client = AsyncIOMotorClient(MONGO_DETAILS)
 database = client.navflow
