@@ -65,3 +65,6 @@ docker-compose.override.yml
 # System Files
 .DS_Store
 Thumbs.db
+
+# Detection Model
+ml/

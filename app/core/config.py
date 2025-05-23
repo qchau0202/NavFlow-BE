@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     CAMERA_TIMEOUT: int = 10  # seconds
     
     # Model settings
-    MODEL_DIR: str = os.path.join(PROJECT_ROOT, "data_crawl_demo", "runs", "detect", "train", "weights")
+    MODEL_DIR: str = os.path.join(BASE_DIR, "ml", "models", "trained")
     CONFIDENCE_THRESHOLD: float = 0.25
     
     # CORS settings

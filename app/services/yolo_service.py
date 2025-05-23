@@ -7,6 +7,24 @@ import numpy as np
 from typing import Dict, List, Any, Tuple
 from ultralytics import YOLO
 from app.core.config import settings
+import requests
+from pathlib import Path
+
+def download_model_from_github():
+    model_url = "https://github.com/qchau0202/NavFlow-ML/releases/download/v1.0.0/navflow_traffic_detection_v1.pt"
+    model_path = Path(settings.MODEL_DIR) / "navflow_traffic_detection_v1.pt"
+    
+    # Create the directory if it doesn't exist
+    model_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Download the model
+    response = requests.get(model_url)
+    if response.status_code == 200:
+        with open(model_path, 'wb') as f:
+            f.write(response.content)
+        print(f"Model downloaded successfully to {model_path}")
+    else:
+        print(f"Failed to download model: {response.status_code}")
 
 class YOLOService:
     def __init__(self):
@@ -17,9 +35,9 @@ class YOLOService:
     def load_model(self):
         """Load the custom trained YOLO model"""
         try:
-            model_path = os.path.join(settings.MODEL_DIR, "best.pt")
+            model_path = os.path.join(settings.MODEL_DIR, "navflow_traffic_detection_v1.pt")
             if not os.path.exists(model_path):
-                raise FileNotFoundError(f"Custom model file not found at {model_path}")
+                download_model_from_github()  # Download if not found
             self.model = YOLO(model_path)
             print(f"Custom model loaded successfully from {model_path}")
             print(f"Model classes: {self.model.names}")
