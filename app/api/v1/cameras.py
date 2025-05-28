@@ -22,18 +22,13 @@ async def add_camera(
 ):
     """Add a new camera"""
     try:
-        # If source is not provided, look it up from CAMERA_URLS
-        if source is None:
-            source = CAMERA_URLS.get(camera_id)
-            if not source:
-                raise HTTPException(status_code=404, detail="Camera source not found")
         camera_service.add_camera(camera_id, source)
         return {"message": f"Camera {camera_id} added successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{camera_id}")
-async def remove_camera(camera_id: str, api_key: str = Depends(verify_api_key)):
+async def remove_camera(camera_id: str):
     """Remove a camera"""
     try:
         camera_service.remove_camera(camera_id)

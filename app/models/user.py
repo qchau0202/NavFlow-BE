@@ -1,6 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
-class User(BaseModel):
-    username: str
-    email: str
-    password: str
+class UserModel(BaseModel):
+    name: str
+    email: EmailStr
+    password: str  # Store hashed password!
+    role: str = "guest"  # or "admin"
+
+class UserResponseModel(BaseModel):
+    name: str
+    email: EmailStr
+    role: str = "guest"

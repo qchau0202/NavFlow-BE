@@ -1,5 +1,8 @@
 from fastapi import APIRouter
-from .endpoints import routing
+from app.api.v1.endpoints import traffic, auth
 
-router = APIRouter()
-router.include_router(routing.router, prefix="", tags=["routing"])
+v1_router = APIRouter()
+
+# Include all endpoint routers
+v1_router.include_router(traffic.router, prefix="/traffic", tags=["traffic"])
+v1_router.include_router(auth.router, prefix="/auth", tags=["auth"]) 

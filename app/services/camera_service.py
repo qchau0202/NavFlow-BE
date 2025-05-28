@@ -22,12 +22,6 @@ class CameraService:
         """
         Get frame from camera without storing it
         """
-        if camera_id not in self.cameras:
-            # For testing, you can use a video file
-            if camera_id == "test":
-                self.cameras[camera_id] = cv2.VideoCapture(0)  # Use webcam for testing
-            else:
-                return None
 
         # If it's a URL camera
         if isinstance(self.cameras[camera_id], str):

@@ -1,30 +1,28 @@
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import traffic, cameras
-from app.api.v1 import router as v1_router
 from app.core.config import settings
+from app.api.v1.router import v1_router
 from app.services.yolo_service import download_model_from_github
+from app.services.camera_service import camera_service
+from app.core.camera_api import CAMERA_URLS
+from app.core.mongo import verify_mongo_connection
 
 app = FastAPI(
-    title="NavFlow Traffic Detection API",
-    description="Real-time traffic detection using YOLOv8",
-    version="1.0.0"
+    title=settings.PROJECT_NAME,
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
-# CORS middleware
+# Set up CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(traffic.router, prefix="/api/v1/traffic", tags=["traffic"])
-app.include_router(cameras.router, prefix="/api/v1/cameras", tags=["cameras"])
-app.include_router(v1_router.router, prefix="/api/v1", tags=["v1"])
+# Include the v1 router
+app.include_router(v1_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():
@@ -32,4 +30,11 @@ async def root():
 
 @app.on_event("startup")
 async def startup_event():
-    download_model_from_github() 
+    # Download the model
+    download_model_from_github()
+    
+    # Initialize cameras from configuration
+    for camera_id, url in CAMERA_URLS.items():
+        camera_service.add_camera(camera_id, url)
+
+verify_mongo_connection() 

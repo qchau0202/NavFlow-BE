@@ -1,6 +1,3 @@
-"""
-YOLO service for traffic detection
-"""
 import os
 import cv2
 import numpy as np
@@ -14,10 +11,16 @@ def download_model_from_github():
     model_url = "https://github.com/qchau0202/NavFlow-ML/releases/download/v1.0.0/navflow_traffic_detection_v1.pt"
     model_path = Path(settings.MODEL_DIR) / "navflow_traffic_detection_v1.pt"
     
+    # Check if model already exists
+    if model_path.exists():
+        print(f"Model already exists at {model_path}")
+        return
+    
     # Create the directory if it doesn't exist
     model_path.parent.mkdir(parents=True, exist_ok=True)
     
     # Download the model
+    print(f"Downloading model from {model_url}...")
     response = requests.get(model_url)
     if response.status_code == 200:
         with open(model_path, 'wb') as f:
