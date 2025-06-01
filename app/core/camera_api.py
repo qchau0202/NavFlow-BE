@@ -22,7 +22,7 @@ CAMERA_CONFIGS = [
     {
         "id": "NKKN_TranQuocToan",
         "name": "NKKN - Trần Quốc Toản",
-        "coordinates": [10.783443, 106.690751],
+        "coordinates": [10.786325, 106.687634],
         "status": "active",
         "url": CAMERA_URLS["NKKN_TranQuocToan"]
     },
@@ -43,7 +43,7 @@ CAMERA_CONFIGS = [
     {
         "id": "NKKN_DBP2",
         "name": "NKKN - Điện Biên Phủ 2",
-        "coordinates": [10.786325, 106.687634],
+        "coordinates": [10.783443, 106.690751],
         "status": "active",
         "url": CAMERA_URLS["NKKN_DBP2"]
     },
@@ -57,70 +57,70 @@ CAMERA_CONFIGS = [
     {
         "id": "DBP_CMT8",
         "name": "Điện Biên Phủ - Cách Mạng Tháng 8",
-        "coordinates": [10.768534, 106.683877],
+        "coordinates": [10.774237, 106.688036],
         "status": "active",
         "url": CAMERA_URLS["DBP_CMT8"]
     },
     {
         "id": "DBP_TruongDinh",
         "name": "Điện Biên Phủ - Trương Định",
-        "coordinates": [10.769036, 106.683242],
+        "coordinates": [10.77996, 106.68721],
         "status": "active",
         "url": CAMERA_URLS["DBP_TruongDinh"]
     },
     {
         "id": "CaoThang_VoVanTan1",
         "name": "Cao Thắng - Võ Văn Tần 1",
-        "coordinates": [10.766276, 106.678793],
+        "coordinates": [10.768534, 106.683877],
         "status": "active",
         "url": CAMERA_URLS["CaoThang_VoVanTan1"]
     },
     {
         "id": "CaoThang_VoVanTan2",
         "name": "Cao Thắng - Võ Văn Tần 2",
-        "coordinates": [10.76645, 106.68261],
+        "coordinates": [10.769036, 106.683242],
         "status": "active",
         "url": CAMERA_URLS["CaoThang_VoVanTan2"]
     },
     {
         "id": "LyThaiTo_NguyenDinhChieu",
         "name": "Lý Thái Tổ - Nguyễn Đình Chiểu",
-        "coordinates": [10.774237, 106.688036],
+        "coordinates": [10.766276, 106.678793],
         "status": "active",
         "url": CAMERA_URLS["LyThaiTo_NguyenDinhChieu"]
     },
     {
         "id": "NguyenDinhChieu-TruongDinh",
         "name": "Nguyễn Đình Chiểu - Trương Định",
-        "coordinates": [10.77499, 106.686646],
+        "coordinates": [10.777925, 106.689661],
         "status": "active",
         "url": CAMERA_URLS["NguyenDinhChieu-TruongDinh"]
     },
     {
         "id": "NTMK_NguyenThienThuat",
         "name": "Nguyễn Thị Minh Khai - Nguyễn Thiện Thuật",
-        "coordinates": [10.776624, 106.683696],
+        "coordinates": [10.76645, 106.68261],
         "status": "active",
         "url": CAMERA_URLS["NTMK_NguyenThienThuat"]
     },
     {
         "id": "CMT8_VoVanTan",
         "name": "Cách Mạng Tháng 8 - Võ Văn Tần",
-        "coordinates": [10.777825, 106.682012],
+        "coordinates": [10.776624, 106.683696],
         "status": "active",
         "url": CAMERA_URLS["CMT8_VoVanTan"]
     },
     {
         "id": "CMT8_NguyenDinhChieu",
         "name": "Cách Mạng Tháng 8 - Nguyễn Đình Chiểu",
-        "coordinates": [10.77996, 106.68721],
+        "coordinates": [10.777825, 106.682012],
         "status": "active",
         "url": CAMERA_URLS["CMT8_NguyenDinhChieu"]
     },
     {
         "id": "NutGiaoCTDC",
         "name": "Nút giao công trường dân chủ",
-        "coordinates": [10.777925, 106.689661],
+        "coordinates": [10.77996, 106.68721],
         "status": "active",
         "url": CAMERA_URLS["NutGiaoCTDC"]
     }

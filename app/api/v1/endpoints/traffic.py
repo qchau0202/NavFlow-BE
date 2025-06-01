@@ -120,3 +120,48 @@ async def stream_camera(camera_id: str):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
+
+@router.get("/aggregated-stats")
+async def get_aggregated_stats():
+    """Get aggregated traffic statistics for all cameras"""
+    results = list(traffic_service.latest_results.values())
+    if not results:
+        return {}
+
+    # Aggregate stats
+    total_fullness = 0
+    total_flow_rate = 0
+    total_vehicles = 0
+    vehicle_types = {}
+    confidence_scores = []
+    detections = []
+    timestamps = []
+    camera_count = len(results)
+
+    for entry in results:
+        res = entry.get("results", {})
+        total_fullness += res.get("fullness", 0)
+        total_flow_rate += res.get("flow_rate", 0)
+        total_vehicles += res.get("total_vehicles", 0)
+        timestamps.append(entry.get("timestamp"))
+        # Vehicle types
+        for det in res.get("detections", []):
+            label = det.get("label", "Unknown")
+            vehicle_types[label] = vehicle_types.get(label, 0) + 1
+            if det.get("confidence") is not None:
+                confidence_scores.append(det["confidence"])
+        detections.extend(res.get("detections", []))
+
+    avg_conf = sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0
+    latest_timestamp = max(timestamps) if timestamps else None
+
+    return {
+        "fullness": total_fullness / camera_count if camera_count else 0,
+        "flow_rate": total_flow_rate / camera_count if camera_count else 0,
+        "total_vehicles": total_vehicles,
+        "vehicle_types": vehicle_types,
+        "average_confidence": avg_conf,
+        "timestamp": latest_timestamp,
+        "detections": detections[:10],
+        "camera_count": camera_count,
+    } 

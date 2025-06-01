@@ -63,13 +63,6 @@ class CameraService:
         return list(self.cameras.keys())
 
     def add_camera(self, camera_id: str, source: str):
-        """
-        Add a new camera
-        source can be:
-        - URL for HCMC traffic cameras
-        - Local video file path
-        - Webcam index (0, 1, etc.)
-        """
         if source.startswith('http'):
             self.cameras[camera_id] = source
         else:
