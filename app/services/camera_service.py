@@ -5,8 +5,9 @@ import cv2
 import numpy as np
 import requests
 import re
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, List
 from app.core.config import settings
+from app.core.camera_api import CAMERA_CONFIGS
 
 class CameraService:
     def __init__(self):
@@ -17,6 +18,9 @@ class CameraService:
             'Accept': 'image/avif,image/webp,image/apng,*/*',
             'Referer': 'http://giaothong.hochiminhcity.gov.vn/',
         })
+        # Initialize cameras from config
+        for config in CAMERA_CONFIGS:
+            self.add_camera(config["id"], config["url"])
 
     async def get_frame(self, camera_id: str) -> Optional[np.ndarray]:
         """
@@ -55,6 +59,45 @@ class CameraService:
         except requests.RequestException as error:
             print(f"Error accessing image URL: {error}")
         return None
+
+    def get_all_cameras(self) -> List[dict]:
+        """
+        Get all camera configurations
+        """
+        return [
+            {
+                "id": config["id"],
+                "name": config["name"],
+                "coordinates": config["coordinates"],
+                "status": "active" if config["id"] in self.cameras else "inactive"
+            }
+            for config in CAMERA_CONFIGS
+        ]
+
+    def get_all_stats(self) -> Dict[str, dict]:
+        """
+        Get statistics for all cameras from real detection results if available
+        """
+        stats = {}
+        for config in CAMERA_CONFIGS:
+            camera_id = config["id"]
+            detection = traffic_service.get_latest_results(camera_id)
+            if detection and "results" in detection:
+                res = detection["results"]
+                stats[camera_id] = {
+                    "total_vehicles": res.get("total_vehicles", 0),
+                    "flow_rate": res.get("flow_rate", 0.0),
+                    "vehicle_types": res.get("vehicle_types", {}),
+                    "timestamp": detection.get("timestamp", "")
+                }
+            else:
+                stats[camera_id] = {
+                    "total_vehicles": 0,
+                    "flow_rate": 0.0,
+                    "vehicle_types": {"car": 0, "truck": 0, "motorcycle": 0},
+                    "timestamp": ""
+                }
+        return stats
 
     def list_cameras(self) -> list:
         """

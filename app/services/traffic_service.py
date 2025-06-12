@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.core.camera_api import CAMERA_URLS
 import heapq
 from datetime import datetime
+import time
 
 class TrafficService:
     def __init__(self):
@@ -51,7 +52,6 @@ class TrafficService:
                 del self.latest_results[camera_id]
 
     async def _detection_loop(self, camera_id: str):
-        """Main detection loop for a camera"""
         while self.active_detections.get(camera_id, False):
             try:
                 # Get frame from camera
@@ -84,7 +84,6 @@ class TrafficService:
         return self.latest_results.get(camera_id)
 
     def draw_detections(self, frame: np.ndarray, detections: list) -> np.ndarray:
-        """Draw detection boxes on the frame"""
         try:
             for det in detections:
                 x1, y1, x2, y2 = det["bbox"]
@@ -111,7 +110,6 @@ class TrafficService:
             return frame
 
     def calculate_congestion_rate(self, detection_results: Dict) -> float:
-        """Calculate congestion rate based on detection results"""
         if not detection_results:
             return 0.0
             
@@ -123,7 +121,6 @@ class TrafficService:
         return min(congestion_rate, 1.0)
 
     def get_congestion_data(self) -> Dict[str, float]:
-        """Get congestion rates for all cameras"""
         congestion_data = {}
         for camera_id, results in self.latest_results.items():
             if results and "results" in results:
@@ -132,52 +129,54 @@ class TrafficService:
                 congestion_data[camera_id] = 0.0
         return congestion_data
 
-    def find_shortest_path(self, start_id: str, end_id: str, camera_graph: Dict[str, List[Tuple[str, float]]]) -> List[str]:
-        """
-        A* algorithm implementation for finding shortest path considering congestion
-        """
-        def heuristic(node: str) -> float:
-            # Simple heuristic - can be improved with actual distance calculations
-            return 0.0
-
-        def get_neighbors(node: str) -> List[Tuple[str, float]]:
-            return camera_graph.get(node, [])
-
-        # Initialize data structures
-        open_set = [(0, start_id)]  # (f_score, node)
-        came_from = {}
-        g_score = {start_id: 0}  # Cost from start to current node
-        f_score = {start_id: heuristic(start_id)}  # Estimated total cost
-        closed_set = set()
-
-        while open_set:
-            current_f, current = heapq.heappop(open_set)
-            
-            if current == end_id:
-                # Reconstruct path
-                path = []
-                while current in came_from:
-                    path.append(current)
-                    current = came_from[current]
-                path.append(start_id)
-                path.reverse()
-                return path
-
-            closed_set.add(current)
-
-            for neighbor, cost in get_neighbors(current):
-                if neighbor in closed_set:
-                    continue
-
-                tentative_g_score = g_score[current] + cost
-
-                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
-                    came_from[neighbor] = current
-                    g_score[neighbor] = tentative_g_score
-                    f_score[neighbor] = tentative_g_score + heuristic(neighbor)
-                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
-
-        return []  # No path found
+    def get_all_stats(self) -> Dict[str, dict]:
+        stats = {}
+        now = time.time()
+        window_seconds = 60  # 1 minute window for flow rate
+        for camera_id in CAMERA_URLS.keys():
+            latest = self.latest_results.get(camera_id)
+            if latest and "results" in latest:
+                res = latest["results"]
+                # Vehicle type breakdown
+                vehicle_types = {}
+                for det in res.get("detections", []):
+                    label = det.get("label", "Unknown")
+                    vehicle_types[label] = vehicle_types.get(label, 0) + 1
+                # Flow rate calculation (vehicles per minute)
+                # Store detection history in latest_results if not present
+                if "history" not in latest:
+                    latest["history"] = []
+                # Append current detection to history
+                latest["history"].append({
+                    "timestamp": latest["timestamp"],
+                    "total_vehicles": res.get("total_vehicles", 0)
+                })
+                # Remove old entries
+                latest["history"] = [h for h in latest["history"] if now - h["timestamp"] <= window_seconds]
+                # Calculate flow rate as difference in vehicle count over time window
+                history = latest["history"]
+                if len(history) >= 2:
+                    dt = history[-1]["timestamp"] - history[0]["timestamp"]
+                    dv = history[-1]["total_vehicles"] - history[0]["total_vehicles"]
+                    flow_rate = dv / (dt / 60) if dt > 0 else 0.0
+                else:
+                    flow_rate = 0.0
+                stats[camera_id] = {
+                    "total_vehicles": res.get("total_vehicles", 0),
+                    "vehicle_types": vehicle_types,
+                    "flow_rate": round(flow_rate, 2),
+                    "fullness": res.get("fullness", 0.0),
+                    "timestamp": latest.get("timestamp", "")
+                }
+            else:
+                stats[camera_id] = {
+                    "total_vehicles": 0,
+                    "vehicle_types": {},
+                    "flow_rate": 0.0,
+                    "fullness": 0.0,
+                    "timestamp": ""
+                }
+        return stats
 
 # Create singleton instance
 traffic_service = TrafficService() 
